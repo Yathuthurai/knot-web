@@ -5,6 +5,7 @@ import { Icon, Avatar } from './components/ui';
 import { LoginPage, RegisterPage, ForgotPasswordPage } from './pages/Auth';
 import HomePage from './pages/Home';
 import GroupDetailPage from './pages/GroupDetail';
+import ExpensesPage from './pages/Expenses';
 import ChallengeDetailPage from './pages/ChallengeDetail';
 import { ListDetailPage, FriendsPage, ProfilePage } from './pages/Other';
 
@@ -86,6 +87,7 @@ function AppLayout({ user }) {
         <Routes>
           <Route path="/"                                          element={<HomePage/>}/>
           <Route path="/groups/:id"                                element={<GroupDetailPage/>}/>
+          <Route path="/groups/:groupId/expenses"                  element={<ExpensesPage/>}/>
           <Route path="/groups/:groupId/challenges/:challengeId"   element={<ChallengeDetailPage/>}/>
           <Route path="/groups/:groupId/lists/:listId"             element={<ListDetailPage/>}/>
           <Route path="/friends"                                   element={<FriendsPage/>}/>

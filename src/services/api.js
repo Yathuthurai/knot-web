@@ -50,6 +50,12 @@ export const groupsAPI = {
   leave:    gid        => del(`/groups/${gid}/leave`),
   activity: gid        => get(`/groups/${gid}/activity`),
 };
+export const expensesAPI = {
+  forGroup: (groupId)  => get(`/expenses/group/${groupId}`),
+  create:   (data)     => post('/expenses', data),
+  settle:   (splitId)  => patch(`/expenses/splits/${splitId}/settle`),
+  delete:   (id)       => del(`/expenses/${id}`),
+};
 export const challengesAPI = {
   forGroup:  gid             => get(`/challenges/group/${gid}`),
   create:    d               => post('/challenges', d),

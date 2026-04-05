@@ -63,9 +63,14 @@ export default function GroupDetailPage() {
             <h1 style={{fontSize:20,fontWeight:700}}>{group.name}</h1>
             {group.description && <p style={{fontSize:13,color:'var(--text-3)'}}>{group.description}</p>}
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={()=>setShowInvite(true)}>
-            <Icon name="plus" size={13} color="var(--blue-dark)"/> Invite
-          </button>
+          <div style={{display:'flex',gap:8}}>
+            <button className="btn btn-secondary btn-sm" onClick={()=>navigate(`/groups/${id}/expenses`)}>
+              Expenses
+            </button>
+            <button className="btn btn-secondary btn-sm" onClick={()=>setShowInvite(true)}>
+              <Icon name="plus" size={13} color="var(--blue-dark)"/> Invite
+            </button>
+          </div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:6,marginTop:12}}>
           {group.members?.slice(0,6).map((m,i) => (
