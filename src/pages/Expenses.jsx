@@ -15,15 +15,14 @@ function MemberAvatar({ name, color, size = 36 }) {
   );
 }
 
-function ExpenseCard({ expense, user, onSettle, onDelete, onRefresh }) {
+function ExpenseCard({ expense, user, onSettle, onDelete }) {
   const [open, setOpen] = useState(false);
-  const isPayer   = expense.paid_by === user?.id;
-  const unsettled = (expense.splits || []).filter(s => !s.is_settled && s.user_id !== expense.paid_by);
+  const isPayer    = expense.paid_by === user?.id;
+  const unsettled  = (expense.splits || []).filter(s => !s.is_settled && s.user_id !== expense.paid_by);
   const allSettled = unsettled.length === 0;
 
   return (
     <div style={{ background: 'var(--card)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', overflow: 'hidden', marginBottom: 10 }}>
-      {/* Top row */}
       <div onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', cursor: 'pointer' }}>
         <div style={{ width: 42, height: 42, borderRadius: 12, background: 'var(--blue-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Icon name="list" size={20} color="var(--blue)" />
@@ -37,17 +36,16 @@ function ExpenseCard({ expense, user, onSettle, onDelete, onRefresh }) {
         <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
           <span style={{ fontSize: 17, fontWeight: 700 }}>LKR {fmt(expense.total_amount)}</span>
           <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 8, background: allSettled ? '#E8F8ED' : '#FFF0F0', color: allSettled ? '#30D158' : 'var(--danger)' }}>
-            {allSettled ? 'Settled' : `LKR {unsettled.length} pending`}
+            {allSettled ? 'Settled' : `${unsettled.length} pending`}
           </span>
         </div>
         <Icon name={open ? 'back' : 'chevron'} size={14} color="var(--text-4)" />
       </div>
 
-      {/* Expanded splits */}
       {open && (
         <div style={{ borderTop: '0.5px solid var(--border)', padding: '10px 16px 14px' }}>
           {(expense.splits || []).map(s => (
-            <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 10, paddingVertical: 6, padding: '6px 0', borderBottom: '0.5px solid var(--border)' }}>
+            <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 0', borderBottom: '0.5px solid var(--border)' }}>
               <MemberAvatar name={s.user?.display_name} color={s.user?.avatar_color} size={30} />
               <span style={{ flex: 1, fontSize: 13, color: 'var(--text)' }}>
                 {s.user_id === user?.id ? 'You' : s.user?.display_name}
@@ -78,13 +76,13 @@ function ExpenseCard({ expense, user, onSettle, onDelete, onRefresh }) {
 }
 
 function AddExpenseModal({ open, onClose, groupId, members, userId, onAdded }) {
-  const [description, setDescription] = useState('');
-  const [amount, setAmount]           = useState('');
-  const [paidBy, setPaidBy]           = useState(userId);
-  const [splitType, setSplitType]     = useState('equal');
-  const [selected, setSelected]       = useState([]);
+  const [description, setDescription]     = useState('');
+  const [amount, setAmount]               = useState('');
+  const [paidBy, setPaidBy]               = useState(userId);
+  const [splitType, setSplitType]         = useState('equal');
+  const [selected, setSelected]           = useState([]);
   const [customAmounts, setCustomAmounts] = useState({});
-  const [loading, setLoading]         = useState(false);
+  const [loading, setLoading]             = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -123,9 +121,9 @@ function AddExpenseModal({ open, onClose, groupId, members, userId, onAdded }) {
     finally { setLoading(false); }
   };
 
-  const labelStyle = { fontSize: 12, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 8, marginTop: 16, display: 'block' };
+  const labelStyle  = { fontSize: 12, fontWeight: 600, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 8, marginTop: 16, display: 'block' };
   const memberGroup = { background: 'var(--bg)', borderRadius: 12, overflow: 'hidden' };
-  const memberRow = (active) => ({ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', background: active ? 'var(--blue-light)' : 'transparent', cursor: 'pointer', borderBottom: '0.5px solid var(--border)' });
+  const memberRow   = (active) => ({ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 14px', background: active ? 'var(--blue-light)' : 'transparent', cursor: 'pointer', borderBottom: '0.5px solid var(--border)' });
 
   return (
     <Modal open={open} onClose={onClose} title="Add Expense">
@@ -135,9 +133,9 @@ function AddExpenseModal({ open, onClose, groupId, members, userId, onAdded }) {
       </div>
 
       <div className="input-group">
-        <label className="input-label">Total Amount</label>
+        <label className="input-label">Total Amount (LKR)</label>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-3)' }}>$</span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-3)' }}>LKR</span>
           <input className="input" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" step="0.01" style={{ fontSize: 22, fontWeight: 700 }} />
         </div>
       </div>
@@ -192,7 +190,7 @@ function AddExpenseModal({ open, onClose, groupId, members, userId, onAdded }) {
       {splitType === 'equal' && amount && selected.length > 0 && (
         <div style={{ background: 'var(--blue-light)', borderRadius: 10, padding: '10px 14px', margin: '10px 0', textAlign: 'center' }}>
           <span style={{ fontSize: 13, color: 'var(--blue-dark)' }}>
-            Each person pays <strong>${equalShare}</strong> ({selected.length} {selected.length === 1 ? 'person' : 'people'})
+            Each person pays <strong>LKR {equalShare}</strong> ({selected.length} {selected.length === 1 ? 'person' : 'people'})
           </span>
         </div>
       )}
@@ -206,11 +204,11 @@ function AddExpenseModal({ open, onClose, groupId, members, userId, onAdded }) {
               <div key={uid} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderBottom: i < selected.length - 1 ? '0.5px solid var(--border)' : 'none' }}>
                 <MemberAvatar name={name} color={m?.user?.avatar_color} size={30} />
                 <span style={{ flex: 1, fontSize: 13 }}>{uid === userId ? 'You' : name}</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ color: 'var(--text-3)' }}>$</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-3)' }}>LKR</span>
                   <input type="number" value={customAmounts[uid] || ''} onChange={e => setCustomAmounts(p => ({ ...p, [uid]: e.target.value }))}
                     placeholder="0.00" step="0.01"
-                    style={{ width: 80, borderBottom: '1px solid var(--blue-border)', fontSize: 15, fontWeight: 600, textAlign: 'right', padding: '4px 0', background: 'transparent', border: 'none', borderBottom: '1.5px solid var(--blue-border)', outline: 'none', fontFamily: 'var(--font)', color: 'var(--text)' }} />
+                    style={{ width: 90, fontSize: 15, fontWeight: 600, textAlign: 'right', padding: '4px 0', background: 'transparent', border: 'none', borderBottom: '1.5px solid var(--blue-border)', outline: 'none', fontFamily: 'var(--font)', color: 'var(--text)' }} />
                 </div>
               </div>
             );
@@ -226,15 +224,15 @@ function AddExpenseModal({ open, onClose, groupId, members, userId, onAdded }) {
 }
 
 export default function ExpensesPage() {
-  const { groupId } = useParams();
-  const navigate    = useNavigate();
-  const user        = useAuthStore(s => s.user);
-  const [expenses, setExpenses] = useState([]);
-  const [balances, setBalances] = useState([]);
-  const [members, setMembers]   = useState([]);
-  const [loading, setLoading]   = useState(true);
-  const [tab, setTab]           = useState('expenses');
-  const [showAdd, setShowAdd]   = useState(false);
+  const { groupId }   = useParams();
+  const navigate      = useNavigate();
+  const user          = useAuthStore(s => s.user);
+  const [expenses, setExpenses]   = useState([]);
+  const [balances, setBalances]   = useState([]);
+  const [members, setMembers]     = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [tab, setTab]             = useState('expenses');
+  const [showAdd, setShowAdd]     = useState(false);
   const [groupName, setGroupName] = useState('');
 
   const load = useCallback(async () => {
@@ -268,7 +266,6 @@ export default function ExpensesPage() {
 
   return (
     <div>
-      {/* Header */}
       <div style={{ background: 'var(--card)', borderBottom: '0.5px solid var(--border)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue)', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font)', fontWeight: 600, fontSize: 14 }}>
           <Icon name="back" size={16} color="var(--blue)" /> Back
@@ -279,7 +276,6 @@ export default function ExpensesPage() {
         </button>
       </div>
 
-      {/* Summary bar */}
       {myBalances.length > 0 && (
         <div style={{ background: 'var(--card)', borderBottom: '0.5px solid var(--border)', padding: '12px 20px', display: 'flex', gap: 12 }}>
           {totalOwed > 0 && (
@@ -297,7 +293,6 @@ export default function ExpensesPage() {
         </div>
       )}
 
-      {/* Tabs */}
       <div style={{ padding: '12px 20px', background: 'var(--card)', borderBottom: '0.5px solid var(--border)' }}>
         <div className="tabs">
           <button className={`tab-btn ${tab === 'expenses' ? 'active' : ''}`} onClick={() => setTab('expenses')}>
@@ -320,41 +315,37 @@ export default function ExpensesPage() {
               <p className="empty-sub">Add an expense and split it with the group</p>
               <button className="btn btn-primary" onClick={() => setShowAdd(true)}>Add First Expense</button>
             </div>
-          ) : (
-            expenses.map(e => (
-              <ExpenseCard key={e.id} expense={e} user={user} onSettle={settle} onDelete={deleteExpense} onRefresh={load} />
-            ))
-          )
+          ) : expenses.map(e => (
+            <ExpenseCard key={e.id} expense={e} user={user} onSettle={settle} onDelete={deleteExpense} />
+          ))
+        ) : balances.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">✅</div>
+            <p className="empty-title">All settled up!</p>
+            <p className="empty-sub">No outstanding balances in this group</p>
+          </div>
         ) : (
-          balances.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">✅</div>
-              <p className="empty-title">All settled up!</p>
-              <p className="empty-sub">No outstanding balances in this group</p>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {balances.map((b, i) => {
-                const isMyDebt = b.ower_id === user?.id;
-                const isMyCredit = b.payer_id === user?.id;
-                return (
-                  <div key={i} style={{ background: 'var(--card)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <MemberAvatar name={b.ower_name} color={b.ower_color} size={40} />
-                    <div style={{ flex: 1 }}>
-                      <p style={{ fontSize: 14 }}>
-                        <strong>{isMyDebt ? 'You' : b.ower_name}</strong>
-                        <span style={{ color: 'var(--text-3)' }}> owe{isMyDebt ? '' : 's'} </span>
-                        <strong>{isMyCredit ? 'you' : b.payer_name}</strong>
-                      </p>
-                    </div>
-                    <span style={{ fontSize: 18, fontWeight: 700, color: isMyDebt ? 'var(--danger)' : isMyCredit ? '#30D158' : 'var(--text-3)' }}>
-                      ${fmt(b.amount)}
-                    </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {balances.map((b, i) => {
+              const isMyDebt   = b.ower_id === user?.id;
+              const isMyCredit = b.payer_id === user?.id;
+              return (
+                <div key={i} style={{ background: 'var(--card)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <MemberAvatar name={b.ower_name} color={b.ower_color} size={40} />
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: 14 }}>
+                      <strong>{isMyDebt ? 'You' : b.ower_name}</strong>
+                      <span style={{ color: 'var(--text-3)' }}> owe{isMyDebt ? '' : 's'} </span>
+                      <strong>{isMyCredit ? 'you' : b.payer_name}</strong>
+                    </p>
                   </div>
-                );
-              })}
-            </div>
-          )
+                  <span style={{ fontSize: 18, fontWeight: 700, color: isMyDebt ? 'var(--danger)' : isMyCredit ? '#30D158' : 'var(--text-3)' }}>
+                    LKR {fmt(b.amount)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
